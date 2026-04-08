@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import About from "./pages/About";
 import EyeClinic from "./pages/EyeClinic";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import Donate from "./pages/Donate";
 import Contact from "./pages/Contact";
 import Gallery from "./pages/Gallery";
@@ -47,10 +48,11 @@ import {
 import {
   WhatsAppEditor, SocialsEditor, NavbarEditor, FooterEditor,
 } from "./pages/admin/editors/SettingsEditors";
+import { AdminBlogList } from "./pages/admin/editors/BlogEditor";
+import { AdminGalleryEditor } from "./pages/admin/editors/GalleryEditor";
 
 const queryClient = new QueryClient();
 
-// Track page visits on route change
 const PageTracker = () => {
   const location = useLocation();
   useEffect(() => {
@@ -89,6 +91,7 @@ const App = () => (
                 <Route path="/about" element={<About />} />
                 <Route path="/eye-clinic" element={<EyeClinic />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/gallery" element={<Gallery />} />
                 <Route path="/contact" element={<Contact />} />
@@ -126,7 +129,8 @@ const App = () => (
                 <Route path="clinic/cta" element={<ClinicCtaEditor />} />
                 <Route path="clinic/images" element={<ClinicImagesEditor />} />
                 <Route path="blog/hero" element={<BlogHeroEditor />} />
-                <Route path="blog/posts" element={<BlogPostsEditor />} />
+                <Route path="blog/posts-legacy" element={<BlogPostsEditor />} />
+                <Route path="blog/manage" element={<AdminBlogList />} />
                 <Route path="donate/hero" element={<DonateHeroEditor />} />
                 <Route path="donate/why" element={<DonateWhyEditor />} />
                 <Route path="donate/ways" element={<DonateWaysEditor />} />
@@ -135,7 +139,8 @@ const App = () => (
                 <Route path="contact/hero" element={<ContactHeroEditor />} />
                 <Route path="contact/info" element={<ContactInfoEditor />} />
                 <Route path="gallery/hero" element={<GalleryHeroEditor />} />
-                <Route path="gallery/images" element={<GalleryImagesEditor />} />
+                <Route path="gallery/images-legacy" element={<GalleryImagesEditor />} />
+                <Route path="gallery/manage" element={<AdminGalleryEditor />} />
                 <Route path="settings/whatsapp" element={<WhatsAppEditor />} />
                 <Route path="settings/socials" element={<SocialsEditor />} />
                 <Route path="settings/navbar" element={<NavbarEditor />} />
