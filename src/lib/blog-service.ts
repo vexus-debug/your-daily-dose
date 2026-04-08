@@ -1,5 +1,4 @@
 import { supabase } from "@/integrations/supabase/client";
-import { uploadImage } from "./supabase-content";
 
 export interface BlogPost {
   id: string;
@@ -32,8 +31,11 @@ function generateSlug(title: string): string {
     .slice(0, 100) + "-" + Date.now().toString(36);
 }
 
+// Use (supabase as any) for tables not yet in generated types
+const db = () => supabase as any;
+
 export async function getBlogPosts(publishedOnly = true): Promise<BlogPost[]> {
-  let query = supabase.from("blog_posts").select("*").order("created_at", { ascending: false });
+  let query = db().from("blog_posts").select("*").order("created_at", { ascending: false });
   if (publishedOnly) query = query.eq("published", true);
   const { data, error } = await query;
   if (error) { console.error(error); return []; }
@@ -41,7 +43,7 @@ export async function getBlogPosts(publishedOnly = true): Promise<BlogPost[]> {
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("blog_posts")
     .select("*")
     .eq("slug", slug)
@@ -52,7 +54,7 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
 
 export async function createBlogPost(post: { title: string; excerpt?: string; content?: string; category?: string; cover_image?: string; published?: boolean }): Promise<BlogPost | null> {
   const slug = generateSlug(post.title);
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("blog_posts")
     .insert({ ...post, slug, content: post.content || "", category: post.category || "General" })
     .select()
@@ -62,20 +64,19 @@ export async function createBlogPost(post: { title: string; excerpt?: string; co
 }
 
 export async function updateBlogPost(id: string, updates: Partial<Omit<BlogPost, "id" | "created_at" | "updated_at">>): Promise<boolean> {
-  const { error } = await supabase.from("blog_posts").update(updates).eq("id", id);
+  const { error } = await db().from("blog_posts").update(updates).eq("id", id);
   if (error) { console.error(error); return false; }
   return true;
 }
 
 export async function deleteBlogPost(id: string): Promise<boolean> {
-  const { error } = await supabase.from("blog_posts").delete().eq("id", id);
+  const { error } = await db().from("blog_posts").delete().eq("id", id);
   if (error) { console.error(error); return false; }
   return true;
 }
 
-// Blog media
 export async function getBlogMedia(postId: string): Promise<BlogMedia[]> {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("blog_media")
     .select("*")
     .eq("post_id", postId)
@@ -85,9 +86,9 @@ export async function getBlogMedia(postId: string): Promise<BlogMedia[]> {
 }
 
 export async function addBlogMedia(postId: string, url: string, type = "image", caption?: string): Promise<BlogMedia | null> {
-  const { data: existing } = await supabase.from("blog_media").select("sort_order").eq("post_id", postId).order("sort_order", { ascending: false }).limit(1);
-  const nextOrder = existing && existing.length > 0 ? (existing[0] as any).sort_order + 1 : 0;
-  const { data, error } = await supabase
+  const { data: existing } = await db().from("blog_media").select("sort_order").eq("post_id", postId).order("sort_order", { ascending: false }).limit(1);
+  const nextOrder = existing && existing.length > 0 ? existing[0].sort_order + 1 : 0;
+  const { data, error } = await db()
     .from("blog_media")
     .insert({ post_id: postId, url, type, caption, sort_order: nextOrder })
     .select()
@@ -97,7 +98,7 @@ export async function addBlogMedia(postId: string, url: string, type = "image", 
 }
 
 export async function deleteBlogMedia(id: string): Promise<boolean> {
-  const { error } = await supabase.from("blog_media").delete().eq("id", id);
+  const { error } = await db().from("blog_media").delete().eq("id", id);
   if (error) { console.error(error); return false; }
   return true;
 }

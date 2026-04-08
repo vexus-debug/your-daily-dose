@@ -10,8 +10,10 @@ export interface GalleryImage {
   created_at: string;
 }
 
+const db = () => supabase as any;
+
 export async function getGalleryImages(): Promise<GalleryImage[]> {
-  const { data, error } = await supabase
+  const { data, error } = await db()
     .from("gallery_images")
     .select("*")
     .order("sort_order", { ascending: true });
@@ -20,9 +22,9 @@ export async function getGalleryImages(): Promise<GalleryImage[]> {
 }
 
 export async function addGalleryImage(img: { src: string; alt: string; category: string; span?: string }): Promise<GalleryImage | null> {
-  const { data: existing } = await supabase.from("gallery_images").select("sort_order").order("sort_order", { ascending: false }).limit(1);
-  const nextOrder = existing && existing.length > 0 ? (existing[0] as any).sort_order + 1 : 0;
-  const { data, error } = await supabase
+  const { data: existing } = await db().from("gallery_images").select("sort_order").order("sort_order", { ascending: false }).limit(1);
+  const nextOrder = existing && existing.length > 0 ? existing[0].sort_order + 1 : 0;
+  const { data, error } = await db()
     .from("gallery_images")
     .insert({ ...img, sort_order: nextOrder })
     .select()
@@ -32,13 +34,13 @@ export async function addGalleryImage(img: { src: string; alt: string; category:
 }
 
 export async function updateGalleryImage(id: string, updates: Partial<Omit<GalleryImage, "id" | "created_at">>): Promise<boolean> {
-  const { error } = await supabase.from("gallery_images").update(updates).eq("id", id);
+  const { error } = await db().from("gallery_images").update(updates).eq("id", id);
   if (error) { console.error(error); return false; }
   return true;
 }
 
 export async function deleteGalleryImage(id: string): Promise<boolean> {
-  const { error } = await supabase.from("gallery_images").delete().eq("id", id);
+  const { error } = await db().from("gallery_images").delete().eq("id", id);
   if (error) { console.error(error); return false; }
   return true;
 }
