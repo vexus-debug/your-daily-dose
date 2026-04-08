@@ -82,8 +82,8 @@ const navItems: NavItem[] = [
     label: "Blog Page",
     icon: BookOpen,
     children: [
-      { label: "Hero", to: "/admin/blog/hero" },
-      { label: "Blog Posts", to: "/admin/blog/posts" },
+      { label: "Manage Posts", to: "/admin/blog/manage" },
+      { label: "Hero Section", to: "/admin/blog/hero" },
     ],
   },
   {
@@ -109,8 +109,8 @@ const navItems: NavItem[] = [
     label: "Gallery Page",
     icon: Image,
     children: [
-      { label: "Hero", to: "/admin/gallery/hero" },
-      { label: "Images", to: "/admin/gallery/images" },
+      { label: "Manage Images", to: "/admin/gallery/manage" },
+      { label: "Hero Section", to: "/admin/gallery/hero" },
     ],
   },
   {
